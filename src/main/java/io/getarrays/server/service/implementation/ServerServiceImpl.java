@@ -18,7 +18,10 @@ import java.net.Socket;
 import java.util.Collection;
 import java.util.Random;
 
+import static io.getarrays.server.enumeration.Status.SERVER_DOWN;
+import static io.getarrays.server.enumeration.Status.SERVER_UP;
 import static java.lang.Boolean.TRUE;
+import static org.springframework.data.domain.PageRequest.of;
 
 @RequiredArgsConstructor
 @Service
@@ -30,7 +33,7 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public Server create(Server server) {
-        log.info("Saving new server: {}", server.getName()); // This will give us a log in the console  
+        log.info("Saving new server: {}", server.getName()); // This will give us a log in the console
         server.setImageUrl(setServerImageUrl());
         return serverRepo.save(server);    // this is from JPA to save our server in the database
     }
@@ -40,7 +43,7 @@ public class ServerServiceImpl implements ServerService {
         log.info("Pinging server IP: {}", ipAddress);
         Server server = serverRepo.findByIpAddress(ipAddress);
         InetAddress address = InetAddress.getByName(ipAddress);
-        server.setStatus(address.isReachable(10000) ? Status.SERVER_UP : Status.SERVER_DOWN);
+        server.setStatus(address.isReachable(10000) ? SERVER_UP : SERVER_DOWN);
         serverRepo.save(server);
         return server;
     }
@@ -48,13 +51,13 @@ public class ServerServiceImpl implements ServerService {
     @Override
     public Collection<Server> list(int limit) {
         log.info("Fetching all the servers");
-        return serverRepo.findAll(PageRequest.of(0,limit)).toList();
+        return serverRepo.findAll(of(0,limit)).toList();
     }
 
     @Override
     public Server get(Long id) {
-        log.info("Fetching server by ID: {}", id );
-        return serverRepo.getById(id);//.get();
+        log.info("Fetching server by id: {}", id);
+        return serverRepo.findById(id).get();
     }
 
     @Override
@@ -67,7 +70,7 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public Boolean delete(Long id) {
-        log.info("Updating server by ID: {}", id);
+        log.info("Deleting server by ID: {}", id);
         serverRepo.deleteById(id);
         return TRUE;
     }
@@ -81,8 +84,8 @@ public class ServerServiceImpl implements ServerService {
     }
 
     private boolean isReachable(String ipAddress, int port, int timeOut){
-        try{
-            try (Socket socket = new Socket()){
+        try {
+            try(Socket socket = new Socket()){
                 socket.connect(new InetSocketAddress(ipAddress, port), timeOut);
             }
             return true;
@@ -90,5 +93,7 @@ public class ServerServiceImpl implements ServerService {
             return false;
         }
     }
+
+
 
 }

@@ -96,6 +96,6 @@ public class ServerResource {
 
     @DeleteMapping(path = "/image/{fileName}", produces = IMAGE_PNG_VALUE )
     public byte[] getServerImage(@PathVariable("fileName") String fileName) throws IOException {
-        return Files.readAllBytes(Paths.get(System.getProperty("user.home") + "Pictures/Servers/" + fileName));
+        return Files.readAllBytes(Paths.get(System.getProperty("user.home") + "/Pictures/Servers/" + fileName));
     }
 }
