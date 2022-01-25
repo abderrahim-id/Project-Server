@@ -13,6 +13,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.Collection;
 import java.util.Random;
 
@@ -52,7 +54,7 @@ public class ServerServiceImpl implements ServerService {
     @Override
     public Server get(Long id) {
         log.info("Fetching server by ID: {}", id );
-        return serverRepo.getById(id).get();
+        return serverRepo.getById(id);//.get();
     }
 
     @Override
@@ -74,8 +76,19 @@ public class ServerServiceImpl implements ServerService {
 
     private String setServerImageUrl(){
         String[] imageNames = { "server1.png", "server2.png", "server3.png", "server4.png" };
-        // returning this url that's gonna be localhost:8080/server/image/server.png
+        // returning this url that's going to be localhost:8080/server/image/server.png
         return ServletUriComponentsBuilder.fromCurrentContextPath().path("/server/image/" + imageNames[new Random().nextInt(4)]).toUriString();
+    }
+
+    private boolean isReachable(String ipAddress, int port, int timeOut){
+        try{
+            try (Socket socket = new Socket()){
+                socket.connect(new InetSocketAddress(ipAddress, port), timeOut);
+            }
+            return true;
+        } catch(IOException exception){
+            return false;
+        }
     }
 
 }

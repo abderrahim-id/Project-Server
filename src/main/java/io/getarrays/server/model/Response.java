@@ -28,4 +28,4 @@ public class Response {
     protected Map<?,?> data;
 }
 
-// @JsonInclude(NON_NULL)  if I'm sending a success response then the developerMessage is gonna be null so we don't want it to be included in the response
+// @JsonInclude(NON_NULL)  if I'm sending a success response then the developerMessage is gonna be null so we don't want it to be included in the respons
